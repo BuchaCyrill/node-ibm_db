@@ -5,27 +5,13 @@ An asynchronous/synchronous interface for node.js to IBM DB2 and IBM Informix.
 
 **Supported Platforms** - Windows64, MacOS64, Linuxx64, Linuxia32, AIX, Linux on z and Linux on Power PC.
 
-Prerequisite
-------------
-
-- For higher versions of node (When building with Node 4 onwards) the compiler must support
-C++11. Note the default compiler on RHEL 6 does not have the required support.
-Install a newer compiler or upgrade older one.
-
-- Python 2.7 is needed by node-gyp.
-- You need not to install any db2 ODBC client driver for connectivity. Just install ibm_db and it is ready for use.
-
 install
 --------
-
 You may install the package using npm install command:
 
-```
+```bash
 npm install ibm_db
 ```
-
-For more installation details refer: [INSTALL](https://github.com/ibmdb/node-ibm_db/blob/master/INSTALL.md)
-
 un-install
 ----------
 To uninstall node-ibm_db from your system, just delete the node-ibm_db or ibm_db directory.
@@ -52,31 +38,23 @@ ibmdb.open("DRIVER={DB2};DATABASE=<dbname>;HOSTNAME=<myhost>;UID=db2user;PWD=pas
 
 For z/OS and iSeries Connectivity
 ---------------------------------
-For connectivity against DB2 for LUW or Informix Server using node-ibm_db, 
-no license file is required. However, if you want to use node-ibm_db 
-against DB2 for z/OS or DB2 for i(AS400) Servers, you must have db2connect 
-license if server is not db2connectactivated to accept unlimited number of 
-client connection. You can buy db2connect license from IBM. The connectivity 
-can be enabled either on server using db2connectactivate utility or on client 
-using client side license file. If you have client side license file, just 
-copy it under `.../ibm_db/installer/clidriver/license` folder to be effective. 
+For connectivity against DB2 for LUW or Informix Server using node-ibm_db, no license file is required. However, if you want to use node-ibm_db against DB2 for z/OS or DB2 for i(AS400) Servers, you must have db2connect license for it. You can buy db2connect license from IBM. The connectivity can be enabled either on server using db2connectactivate utility or on client using client side license file. If you have client side license file, just copy it under `.../ibm_db/installer/clidriver/license` folder to be effective. 
 
 For AIX install issue
 ---------------------
 If `npm install ibm_db` aborts with "Out Of Memory" error on AIX, first run `ulimit -d unlimited` and then `npm install ibm_db`.
 
-Need Help?
----------
-If you encountered any issue with ibm_db, first check for existing solution or
-work-around under `issues` or on google groups forum. Links are:   
-    
-https://github.com/ibmdb/node-ibm_db/issues    
-https://groups.google.com/forum/#!forum/node-ibm_db   
-   
-If no solution found, you can open a new issue on github or start a new topic in google groups.
+For MacOS Connectivity Issue
+----------------------------
+After `npm install ibm_db` run below command to avoid SQL1042C error:
+`export DYLD_LIBRARY_PATH=<node_modules_dir>/ibm_db/installer/clidriver/lib/icc:$DYLD_LIBRARYPATH`
 
-APIs
-----
+Discussion Forums
+-----------------
+To start a discussion or need help you can post a topic on node-ibm_db google group https://groups.google.com/forum/#!forum/node-ibm_db
+
+api
+---
 
 ### Database
 
@@ -282,7 +260,7 @@ ibmdb.open(cn,function(err,conn){
       else result.closeSync();
 
       //Close the connection
-	  conn.close(function(err){});
+	  conn.close(function(err){}));
     });
   });
 });
@@ -309,7 +287,7 @@ ibmdb.open(cn,function(err,conn){
     result.closeSync();
 
     //Close the connection
-	conn.close(function(err){});
+	conn.close(function(err){}));
   });
 });
 ```
@@ -552,42 +530,6 @@ pool.open(cn, function (err, db) {
 	});
 });
 ```
-
-How to build ibm_db from source code
-------------------------------------
-
-First, you should have a supported C++ compiler installed in the system. 
-node.js add-on binary of ibm_db has source code in C++. For node.js V4 
-onwards your compiler must support C++11 syntax. For node.js v4 on linux, 
-you should have g++ 4.8.3 or later version. On Windows, you should have 
-Visual Studio to build the ibm_db code. node-gyp uses msbuild.exe on Windows.
-   
-As ibm_db uses ODBC/CLI driver to communicate with IBM Database Servers, you should have a db2 client or server installed locally. You can download DB2 client drivers from here: http://www-01.ibm.com/support/docview.wss?uid=swg27007053
-   
-Now set environment variable IBM_DB_HOME to point to the above installed db2 client directory. Example:   
-If db2 client is installed as `D:\dsdriver` on Windows, run this command:   
-`set IBM_DB_HOME=D:\dsdriver`   
-
-If db2 client is installed as /home/user/sqllib on non-windows, run this command:   
-`export IBM_DB_HOME=/home/user/sqllib`   
-
-Now, download source code of ibm_db from github or clone it; install 
-dependent packages mentioned in package.json and run below commands to 
-compile it on Linux/Unix platforms:
-```
-cd <ibm_db directory>
-export PATH=$IBM_DB_HOME/lib:$IBM_DB_HOME/bin:$PATH
-export LD_LIBRARY_PATH=$IBM_DB_HOME/lib:$LD_LIBRARY_PATH
-npm install -g node-gyp
-npm install bindings@1.0.0
-npm install nan@2.2.0
-export PATH=`pwd`/node_modules/.bin:$PATH
-node-gyp configure build --IBM_DB_HOME=$IBM_DB_HOME  --IS_DOWNLOADED=false
-```
-
-Thats it! Now, ibm_db is ready for use. For non-LU platforms, use similar platform specific commands.
-
-
 build options
 -------------
 

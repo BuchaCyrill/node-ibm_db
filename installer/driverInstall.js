@@ -200,7 +200,7 @@ var download_file_httpget = function(file_url) {
         res.on('data', function(data) {
             if( byteIndex + data.length > buf.length ) 
             {
-                console.log( "Error downloading IBM ODBC and CLI Driver from " +
+                log( "Error downloading IBM ODBC and CLI Driver from " +
                      installerfileURL );
                 process.exit(1);
             }
@@ -209,7 +209,7 @@ var download_file_httpget = function(file_url) {
          }).on('end', function() {
              if( byteIndex != buf.length ) 
              {
-                console.log( "Error downloading IBM ODBC and CLI Driver from " +
+                log( "Error downloading IBM ODBC and CLI Driver from " +
                      installerfileURL );
                 process.exit(1);
              }
@@ -217,7 +217,7 @@ var download_file_httpget = function(file_url) {
              var len = fs.writeSync( file, buf, 0, buf.length, 0 );
              if( len != buf.length ) 
              {
-                console.log( "Error writing IBM ODBC and CLI Driver to a file" );
+                log( "Error writing IBM ODBC and CLI Driver to a file" );
                 process.exit(1);
              }
              fs.closeSync( file );
@@ -314,6 +314,8 @@ var download_file_httpget = function(file_url) {
         
         var child = exec('npm config get proxy', function(error, stdout, stderr)
           {
+            //console.log('stdout: ' + stdout.toString().split('\n')[0]);
+            //console.log('stderr: ' + stderr);
             if (error !== null) 
             {
                 console.log('Error occurred while fetching proxy ' +
@@ -342,17 +344,11 @@ var download_file_httpget = function(file_url) {
                         var splitIndex = proxyStr.toString().lastIndexOf(':');
                         if(splitIndex > 0) 
                         {
-                            var proxyUrl = url.parse(proxyStr.toString());
                             options = {
-                             host: proxyUrl.hostname,
-                             port: proxyUrl.port,
+                             host: url.parse(proxyStr.toString()).hostname,
+                             port: url.parse(proxyStr.toString()).port,
                              path: url.parse(installerfileURL).href
                             };
-                            if (proxyUrl.auth) 
-                            {
-                               options.headers = { 'Proxy-Authorization': 'Basic '
-                                   + new Buffer(proxyUrl.auth).toString('base64') };
-                            }
                         }
                     }
                     return http.get(options, downloadCLIDriver); 
@@ -361,17 +357,12 @@ var download_file_httpget = function(file_url) {
             {
                 var splitIndex = proxyStr.toString().lastIndexOf(':');
                 if(splitIndex > 0) {
-                    var proxyUrl = url.parse(proxyStr.toString());
+                            
                     options = {
-                     host: proxyUrl.hostname,
-                     port: proxyUrl.port,
+                     host: url.parse(proxyStr.toString()).hostname,
+                     port: url.parse(proxyStr.toString()).port,
                      path: url.parse(installerfileURL).href
                     };
-                    if (proxyUrl.auth) 
-                    {
-                       options.headers = { 'Proxy-Authorization': 'Basic '
-                           + new Buffer(proxyUrl.auth).toString('base64') };
-                    }
                 }
                 return http.get(options, downloadCLIDriver); 
             }
